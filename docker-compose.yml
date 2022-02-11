@@ -1,0 +1,40 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+  mongo-customer:
+    image: mongo
+    container_name: mongo-customer-db
+    environment:
+      MONGO_INITDB_DATABASE: toqiodb
+      MONGO_INITDB_ROOT_PASSWORD: Toq011!
+      MONGO_INITDB_ROOT_USERNAME: toqio
+    hostname: mongo-customer
+    ports:
+      - "27017:27017"
+    restart: always
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo mongo-customer:27017/zenbrain --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - backend
+
+  card-service:
+    container_name: toq_card_service
+    restart: unless-stopped
+    image: io.toq.carddesrvice
+    build: .
+    ports:
+      - 0.0.0.0:7000:8080
+    expose:
+      - 7000
+    networks:
+      backend:
+
+
+
+
